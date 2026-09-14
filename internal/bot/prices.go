@@ -202,7 +202,7 @@ func (p *PriceSource) Fetch(ctx context.Context) (Snapshot, error) {
 		Rows    []map[string]string `json:"ListaEESSPrecio"`
 	}
 	if err := getJSON(ctx, p.HTTP, endpoint, &raw); err != nil {
-		return Snapshot{}, err
+		return Snapshot{}, failure("price_feed_fetch", err)
 	}
 	if len(raw.Rows) == 0 {
 		return Snapshot{}, fmt.Errorf("empty official price feed")
@@ -249,7 +249,7 @@ func (p *PriceSource) Fetch(ctx context.Context) (Snapshot, error) {
 	// Write each fetched snapshot once, never on a cache hit.
 	if p.Store != nil {
 		if err := p.Store.Record(ctx, snap); err != nil {
-			return Snapshot{}, err
+			return Snapshot{}, failure("price_history_write", err)
 		}
 	}
 	p.cached = snap

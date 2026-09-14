@@ -31,6 +31,10 @@ type App struct {
 }
 
 func safeError(err error) string {
+	var operation *operationError
+	if errors.As(err, &operation) {
+		return operation.Error()
+	}
 	var te *TelegramError
 	if errors.As(err, &te) {
 		return te.Error()
@@ -41,7 +45,7 @@ func safeError(err error) string {
 	if errors.Is(err, context.DeadlineExceeded) {
 		return "timeout"
 	}
-	return "request or storage operation failed"
+	return classifiedError(err)
 }
 func (a *App) Run(ctx context.Context) error {
 	a.sessions = map[sessionKey]*Session{}

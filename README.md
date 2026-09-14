@@ -31,6 +31,8 @@ OpenBao -> External Secrets Operator -> Kubernetes Secret -> bot and database
 
 The nearest station is the savings baseline. Candidate travel cost is subtracted from savings relative to that baseline, as in the original bot. Destination filtering is approximate direction filtering, not a measured route detour. OSRM supplies road distances when available. Otherwise, the estimate is straight-line distance multiplied by 1.25. Public upstream services can fail or limit requests.
 
+The official MITECO host needs legacy RSA key exchange for TLS 1.2, which Go disables by default. Only the public-price HTTP client enables the required RSA AES-GCM cipher suites. Certificate and hostname verification stay enabled, and TLS versions below 1.2 stay disabled. RSA key exchange lacks forward secrecy. Telegram and other services keep Go's default TLS settings.
+
 Maps use OSM tiles with attribution and an in-memory cache. A labelled schematic is used if tiles fail. Images are generated in memory and are not retained on disk. Price history is written once per feed refresh, not for each chat query. It retains approximately 30 days.
 
 ## Development

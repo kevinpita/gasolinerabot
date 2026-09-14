@@ -24,13 +24,16 @@ func getJSON(ctx context.Context, c *http.Client, url string, out any) error {
 	req.Header.Set("Accept", "application/json")
 	resp, e := c.Do(req)
 	if e != nil {
-		return fmt.Errorf("upstream request failed")
+		return failure("upstream_http", e)
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
 		return fmt.Errorf("upstream HTTP %d", resp.StatusCode)
 	}
-	return json.NewDecoder(io.LimitReader(resp.Body, 32<<20)).Decode(out)
+	if err := json.NewDecoder(io.LimitReader(resp.Body, 32<<20)).Decode(out); err != nil {
+		return failure("upstream_json_decode", err)
+	}
+	return nil
 }
 
 type Chat struct {
