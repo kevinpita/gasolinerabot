@@ -1,0 +1,29 @@
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Terraform state and credentials
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfvars
+*.tfvars.json
+*.tfbackend
+crash.log
+crash.*.log
+
+# Local tools and build output
+.devenv*
+/bin/
+/dist/
+node_modules/
+.venv/
+__pycache__/
+*.pyc
+.idea/
+.vscode/
+.DS_Store

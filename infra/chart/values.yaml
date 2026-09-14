@@ -1,0 +1,33 @@
+# Enable only after the bot code, image, and token are ready.
+deployment:
+  enabled: false
+
+image:
+  repository: ghcr.io/kevinpita/gasolinerabot
+  tag: <pending>
+  digest: ""
+  pullPolicy: IfNotPresent
+
+existingSecret: gasolinerabot-secrets
+imagePullSecrets: []
+
+openbao:
+  enabled: false
+  server: https://bao.kevinpita.com
+  # Shared by Terraform. Must be accepted by the Kubernetes API.
+  audience: "https://kubernetes.default.svc.cluster.local"
+
+# Enable once the app serves /healthz and /readyz on port 8080.
+health:
+  enabled: false
+
+tmpSizeLimit: 1Gi
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+    ephemeral-storage: 256Mi
+  limits:
+    cpu: 256m
+    memory: 1Gi
+    ephemeral-storage: 2Gi
