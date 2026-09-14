@@ -89,19 +89,56 @@ type Telegram struct {
 	Base string
 }
 type telegramReply struct {
-	OK         bool            `json:"ok"`
-	Result     json.RawMessage `json:"result"`
-	Code       int             `json:"error_code"`
-	Parameters struct {
+	OK          bool            `json:"ok"`
+	Result      json.RawMessage `json:"result"`
+	Code        int             `json:"error_code"`
+	Description string          `json:"description"`
+	Parameters  struct {
 		Retry int `json:"retry_after"`
 	} `json:"parameters"`
 }
 type TelegramError struct {
-	Code  int
-	Retry time.Duration
+	Code   int
+	Retry  time.Duration
+	Method string
+	Reason string
 }
 
-func (e *TelegramError) Error() string { return fmt.Sprintf("Telegram HTTP %d", e.Code) }
+func (e *TelegramError) Error() string {
+	return fmt.Sprintf("Telegram %s HTTP %d (%s)", e.Method, e.Code, e.Reason)
+}
+
+// Log only fixed categories, never Telegram's raw description. Descriptions can
+// contain message text or other private data. Request URLs contain the token.
+func telegramReason(description string) string {
+	description = strings.ToLower(description)
+	for _, rule := range []struct{ Match, Reason string }{
+		{"object expected as reply markup", "invalid_reply_markup"},
+		{"can't parse entities", "invalid_html"},
+		{"message is not modified", "message_not_modified"},
+		{"query is too old", "expired_callback"},
+		{"query id is invalid", "invalid_callback"},
+		{"chat not found", "chat_not_found"},
+		{"message is too long", "message_too_long"},
+		{"bot was blocked", "bot_blocked"},
+		{"too many requests", "rate_limited"},
+		{"unauthorized", "unauthorized"},
+	} {
+		if strings.Contains(description, rule.Match) {
+			return rule.Reason
+		}
+	}
+	return "unclassified"
+}
+
+func telegramMethod(method string) string {
+	switch method {
+	case "getMe", "getUpdates", "sendMessage", "sendPhoto", "answerCallbackQuery", "editMessageReplyMarkup":
+		return method
+	default:
+		return "unknown_method"
+	}
+}
 func (t *Telegram) request(ctx context.Context, method, contentType string, data []byte, out any) error {
 	for attempt := 0; attempt < 3; attempt++ {
 		req, e := http.NewRequestWithContext(ctx, http.MethodPost, t.Base+"/"+method, bytes.NewReader(data))
@@ -123,7 +160,12 @@ func (t *Telegram) request(ctx context.Context, method, contentType string, data
 			if reply.Code == 0 {
 				reply.Code = resp.StatusCode
 			}
-			err := &TelegramError{reply.Code, time.Duration(reply.Parameters.Retry) * time.Second}
+			err := &TelegramError{
+				Code:   reply.Code,
+				Retry:  time.Duration(reply.Parameters.Retry) * time.Second,
+				Method: telegramMethod(method),
+				Reason: telegramReason(reply.Description),
+			}
 			if err.Code == 429 && err.Retry > 0 && err.Retry <= time.Minute && attempt < 2 {
 				if !sleep(ctx, err.Retry) {
 					return ctx.Err()
@@ -147,7 +189,11 @@ func (t *Telegram) Call(ctx context.Context, method string, args any, out any) e
 	return t.request(ctx, method, "application/json", b, out)
 }
 func (t *Telegram) Send(ctx context.Context, id int64, text string, keys *Markup) error {
-	return t.Call(ctx, "sendMessage", map[string]any{"chat_id": id, "text": text, "parse_mode": "HTML", "link_preview_options": map[string]bool{"is_disabled": true}, "reply_markup": keys}, nil)
+	args := map[string]any{"chat_id": id, "text": text, "parse_mode": "HTML", "link_preview_options": map[string]bool{"is_disabled": true}}
+	if keys != nil {
+		args["reply_markup"] = keys
+	}
+	return t.Call(ctx, "sendMessage", args, nil)
 }
 func (t *Telegram) Photo(ctx context.Context, id int64, png []byte, caption string, keys *Markup) error {
 	var b bytes.Buffer

@@ -108,8 +108,19 @@ func TestTelegramConversations(t *testing.T) {
 			}
 			sent = append(sent, r.FormValue("caption"))
 		} else {
-			var body struct{ Text string }
-			_ = json.NewDecoder(r.Body).Decode(&body)
+			var body struct {
+				Text   string
+				Markup json.RawMessage `json:"reply_markup"`
+			}
+			if e := json.NewDecoder(r.Body).Decode(&body); e != nil {
+				t.Error(e)
+				return
+			}
+			if string(body.Markup) == "null" {
+				w.WriteHeader(http.StatusBadRequest)
+				_, _ = io.WriteString(w, `{"ok":false,"error_code":400,"description":"Bad Request: object expected as reply markup"}`)
+				return
+			}
 			sent = append(sent, body.Text)
 		}
 		_, _ = io.WriteString(w, `{"ok":true,"result":{}}`)
