@@ -1,0 +1,16 @@
+⛽ <b>Top gasolineras baratas</b>
+📍 Radio <b>20 km</b> · 🕒 14/09/2026 08:00
+
+<b>▸ Gasolina 95</b>
+🥇 <b>Barata</b> · <b>1.400 €/L</b>
+   📍 1.1 km · Madrid · 🔁 aparece en varios combustibles · <a href="https://www.google.com/maps/search/?api=1&query=40.010000,-3.000000">Mapa</a>
+🥈 <b>Cercana &amp; Co</b> · <b>1.600 €/L</b>
+   📍 0.0 km · Madrid · 🔁 aparece en varios combustibles · <a href="https://www.google.com/maps/search/?api=1&query=40.000000,-3.000000">Mapa</a>
+
+<b>▸ Diésel / Gasóleo A</b>
+🥇 <b>Barata</b> · <b>1.300 €/L</b>
+   📍 1.1 km · Madrid · 🔁 aparece en varios combustibles · <a href="https://www.google.com/maps/search/?api=1&query=40.010000,-3.000000">Mapa</a>
+🥈 <b>Cercana &amp; Co</b> · <b>1.500 €/L</b>
+   📍 0.0 km · Madrid · 🔁 aparece en varios combustibles · <a href="https://www.google.com/maps/search/?api=1&query=40.000000,-3.000000">Mapa</a>
+
+💡 Usa <b>/repostar</b> para saber si compensa ir a una de ellas.

@@ -59,6 +59,29 @@ spec:
                 secretKeyRef:
                   name: {{ $secret | quote }}
                   key: TELEGRAM_BOT_TOKEN
+            {{- if .Values.postgresql.enabled }}
+            - name: PGHOST
+              value: {{ printf "%s-postgresql" .Release.Name | quote }}
+            - name: PGPORT
+              value: "5432"
+            - name: PGDATABASE
+              value: gasolinerabot
+            - name: PGUSER
+              value: gasolinerabot
+            - name: PGSSLMODE
+              value: disable
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secret | quote }}
+                  key: POSTGRES_APP_PASSWORD
+            {{- else }}
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secret | quote }}
+                  key: DATABASE_URL
+            {{- end }}
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true

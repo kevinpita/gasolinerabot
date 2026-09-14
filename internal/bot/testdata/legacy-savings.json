@@ -1,0 +1,128 @@
+[
+  {
+    "kind": "euros",
+    "value": 30,
+    "mode": "one_way",
+    "routes": {},
+    "best": "2",
+    "net": 3.633245165754817,
+    "message": "🚗 <b>Repostar · solo ida</b>\n\n⭐ <b>Barata</b> · 📍 Madrid\n⛽ Gasolina 95 · <b>1.400 €/L</b>\n📍 1.1 km en línea recta · <a href=\"https://www.google.com/maps/search/?api=1&query=40.010000,-3.000000\">Abrir en Maps</a>\n🛣 Solo ida estimada: <b>1.4 km</b>\n💶 <b>30 € - 1.400 €/L</b>\n🧮 Litros en la gasolinera recomendada: <b>~21.4 L</b>\n🔥 Consumo usado: <b>6 L/100 km</b>\n🧭 Estimado desde la distancia en línea recta.\n\n✅ Es la opción que mejor combina precio y desplazamiento.\n\n<b>Top recomendado · solo ida</b>\n⭐ Barata · Madrid · 1.400 €/L · 1.4 km estim.\n2. Cercana &amp; Co · Madrid · 1.600 €/L · 0.0 km estim.\n\nDatos oficiales: 14/09/2026 08:00"
+  },
+  {
+    "kind": "euros",
+    "value": 30,
+    "mode": "one_way",
+    "routes": {
+      "1": 0,
+      "2": 2
+    },
+    "best": "2",
+    "net": 3.5820000000000034,
+    "message": "🚗 <b>Repostar · solo ida</b>\n\n⭐ <b>Barata</b> · 📍 Madrid\n⛽ Gasolina 95 · <b>1.400 €/L</b>\n📍 1.1 km en línea recta · <a href=\"https://www.google.com/maps/search/?api=1&query=40.010000,-3.000000\">Abrir en Maps</a>\n🛣 Solo ida por carretera: <b>2.0 km</b>\n💶 <b>30 € - 1.400 €/L</b>\n🧮 Litros en la gasolinera recomendada: <b>~21.4 L</b>\n🔥 Consumo usado: <b>6 L/100 km</b>\n🧭 Calculado con ruta por carretera.\n\n✅ Es la opción que mejor combina precio y desplazamiento.\n\n<b>Top recomendado · solo ida</b>\n⭐ Barata · Madrid · 1.400 €/L · 2.0 km carretera\n2. Cercana &amp; Co · Madrid · 1.600 €/L · 0.0 km carretera\n\nDatos oficiales: 14/09/2026 08:00"
+  },
+  {
+    "kind": "euros",
+    "value": 30,
+    "mode": "round_trip",
+    "routes": {},
+    "best": "2",
+    "net": 3.516490331509631,
+    "message": "🚗 <b>Repostar · ida y vuelta</b>\n\n⭐ <b>Barata</b> · 📍 Madrid\n⛽ Gasolina 95 · <b>1.400 €/L</b>\n📍 1.1 km en línea recta · <a href=\"https://www.google.com/maps/search/?api=1&query=40.010000,-3.000000\">Abrir en Maps</a>\n🛣 Ida/vuelta estimada: <b>2.8 km</b>\n💶 <b>30 € - 1.400 €/L</b>\n🧮 Litros en la gasolinera recomendada: <b>~21.4 L</b>\n🔥 Consumo usado: <b>6 L/100 km</b>\n🧭 Estimado desde la distancia en línea recta.\n\n✅ Es la opción que mejor combina precio y desplazamiento.\n\n<b>Top recomendado · ida y vuelta</b>\n⭐ Barata · Madrid · 1.400 €/L · 2.8 km estim.\n2. Cercana &amp; Co · Madrid · 1.600 €/L · 0.0 km estim.\n\nDatos oficiales: 14/09/2026 08:00"
+  },
+  {
+    "kind": "euros",
+    "value": 30,
+    "mode": "round_trip",
+    "routes": {
+      "1": 0,
+      "2": 2
+    },
+    "best": "2",
+    "net": 3.4140000000000037,
+    "message": "🚗 <b>Repostar · ida y vuelta</b>\n\n⭐ <b>Barata</b> · 📍 Madrid\n⛽ Gasolina 95 · <b>1.400 €/L</b>\n📍 1.1 km en línea recta · <a href=\"https://www.google.com/maps/search/?api=1&query=40.010000,-3.000000\">Abrir en Maps</a>\n🛣 Ida/vuelta por carretera: <b>4.0 km</b>\n💶 <b>30 € - 1.400 €/L</b>\n🧮 Litros en la gasolinera recomendada: <b>~21.4 L</b>\n🔥 Consumo usado: <b>6 L/100 km</b>\n🧭 Calculado con ruta por carretera.\n\n✅ Es la opción que mejor combina precio y desplazamiento.\n\n<b>Top recomendado · ida y vuelta</b>\n⭐ Barata · Madrid · 1.400 €/L · 4.0 km carretera\n2. Cercana &amp; Co · Madrid · 1.600 €/L · 0.0 km carretera\n\nDatos oficiales: 14/09/2026 08:00"
+  },
+  {
+    "kind": "liters",
+    "value": 40,
+    "mode": "one_way",
+    "routes": {},
+    "best": "2",
+    "net": 7.883245165754821,
+    "message": "🚗 <b>Repostar · solo ida</b>\n\n⭐ <b>Barata</b> · 📍 Madrid\n⛽ Gasolina 95 · <b>1.400 €/L</b>\n📍 1.1 km en línea recta · <a href=\"https://www.google.com/maps/search/?api=1&query=40.010000,-3.000000\">Abrir en Maps</a>\n🛣 Solo ida estimada: <b>1.4 km</b>\n💶 Repostaje: <b>40 L</b>\n⛽ Precio gasolinera recomendada: <b>1.400 €/L</b>\n🔥 Consumo usado: <b>6 L/100 km</b>\n🧭 Estimado desde la distancia en línea recta.\n\n✅ Es la opción que mejor combina precio y desplazamiento.\n\n<b>Top recomendado · solo ida</b>\n⭐ Barata · Madrid · 1.400 €/L · 1.4 km estim.\n2. Cercana &amp; Co · Madrid · 1.600 €/L · 0.0 km estim.\n\nDatos oficiales: 14/09/2026 08:00"
+  },
+  {
+    "kind": "liters",
+    "value": 40,
+    "mode": "one_way",
+    "routes": {
+      "1": 0,
+      "2": 2
+    },
+    "best": "2",
+    "net": 7.832000000000007,
+    "message": "🚗 <b>Repostar · solo ida</b>\n\n⭐ <b>Barata</b> · 📍 Madrid\n⛽ Gasolina 95 · <b>1.400 €/L</b>\n📍 1.1 km en línea recta · <a href=\"https://www.google.com/maps/search/?api=1&query=40.010000,-3.000000\">Abrir en Maps</a>\n🛣 Solo ida por carretera: <b>2.0 km</b>\n💶 Repostaje: <b>40 L</b>\n⛽ Precio gasolinera recomendada: <b>1.400 €/L</b>\n🔥 Consumo usado: <b>6 L/100 km</b>\n🧭 Calculado con ruta por carretera.\n\n✅ Es la opción que mejor combina precio y desplazamiento.\n\n<b>Top recomendado · solo ida</b>\n⭐ Barata · Madrid · 1.400 €/L · 2.0 km carretera\n2. Cercana &amp; Co · Madrid · 1.600 €/L · 0.0 km carretera\n\nDatos oficiales: 14/09/2026 08:00"
+  },
+  {
+    "kind": "liters",
+    "value": 40,
+    "mode": "round_trip",
+    "routes": {},
+    "best": "2",
+    "net": 7.766490331509634,
+    "message": "🚗 <b>Repostar · ida y vuelta</b>\n\n⭐ <b>Barata</b> · 📍 Madrid\n⛽ Gasolina 95 · <b>1.400 €/L</b>\n📍 1.1 km en línea recta · <a href=\"https://www.google.com/maps/search/?api=1&query=40.010000,-3.000000\">Abrir en Maps</a>\n🛣 Ida/vuelta estimada: <b>2.8 km</b>\n💶 Repostaje: <b>40 L</b>\n⛽ Precio gasolinera recomendada: <b>1.400 €/L</b>\n🔥 Consumo usado: <b>6 L/100 km</b>\n🧭 Estimado desde la distancia en línea recta.\n\n✅ Es la opción que mejor combina precio y desplazamiento.\n\n<b>Top recomendado · ida y vuelta</b>\n⭐ Barata · Madrid · 1.400 €/L · 2.8 km estim.\n2. Cercana &amp; Co · Madrid · 1.600 €/L · 0.0 km estim.\n\nDatos oficiales: 14/09/2026 08:00"
+  },
+  {
+    "kind": "liters",
+    "value": 40,
+    "mode": "round_trip",
+    "routes": {
+      "1": 0,
+      "2": 2
+    },
+    "best": "2",
+    "net": 7.664000000000007,
+    "message": "🚗 <b>Repostar · ida y vuelta</b>\n\n⭐ <b>Barata</b> · 📍 Madrid\n⛽ Gasolina 95 · <b>1.400 €/L</b>\n📍 1.1 km en línea recta · <a href=\"https://www.google.com/maps/search/?api=1&query=40.010000,-3.000000\">Abrir en Maps</a>\n🛣 Ida/vuelta por carretera: <b>4.0 km</b>\n💶 Repostaje: <b>40 L</b>\n⛽ Precio gasolinera recomendada: <b>1.400 €/L</b>\n🔥 Consumo usado: <b>6 L/100 km</b>\n🧭 Calculado con ruta por carretera.\n\n✅ Es la opción que mejor combina precio y desplazamiento.\n\n<b>Top recomendado · ida y vuelta</b>\n⭐ Barata · Madrid · 1.400 €/L · 4.0 km carretera\n2. Cercana &amp; Co · Madrid · 1.600 €/L · 0.0 km carretera\n\nDatos oficiales: 14/09/2026 08:00"
+  },
+  {
+    "kind": "liters",
+    "value": 1,
+    "mode": "one_way",
+    "routes": {},
+    "best": "2",
+    "net": 0.08324516575481386,
+    "message": "🚗 <b>Repostar · solo ida</b>\n\n⭐ <b>Barata</b> · 📍 Madrid\n⛽ Gasolina 95 · <b>1.400 €/L</b>\n📍 1.1 km en línea recta · <a href=\"https://www.google.com/maps/search/?api=1&query=40.010000,-3.000000\">Abrir en Maps</a>\n🛣 Solo ida estimada: <b>1.4 km</b>\n💶 Repostaje: <b>1 L</b>\n⛽ Precio gasolinera recomendada: <b>1.400 €/L</b>\n🔥 Consumo usado: <b>6 L/100 km</b>\n🧭 Estimado desde la distancia en línea recta.\n\n🟡 La diferencia es pequeña; solo iría si te queda de paso.\n\n<b>Top recomendado · solo ida</b>\n⭐ Barata · Madrid · 1.400 €/L · 1.4 km estim.\n2. Cercana &amp; Co · Madrid · 1.600 €/L · 0.0 km estim.\n\nDatos oficiales: 14/09/2026 08:00"
+  },
+  {
+    "kind": "liters",
+    "value": 1,
+    "mode": "one_way",
+    "routes": {
+      "1": 0,
+      "2": 2
+    },
+    "best": "2",
+    "net": 0.032000000000000195,
+    "message": "🚗 <b>Repostar · solo ida</b>\n\n⭐ <b>Barata</b> · 📍 Madrid\n⛽ Gasolina 95 · <b>1.400 €/L</b>\n📍 1.1 km en línea recta · <a href=\"https://www.google.com/maps/search/?api=1&query=40.010000,-3.000000\">Abrir en Maps</a>\n🛣 Solo ida por carretera: <b>2.0 km</b>\n💶 Repostaje: <b>1 L</b>\n⛽ Precio gasolinera recomendada: <b>1.400 €/L</b>\n🔥 Consumo usado: <b>6 L/100 km</b>\n🧭 Calculado con ruta por carretera.\n\n🟡 La diferencia es pequeña; solo iría si te queda de paso.\n\n<b>Top recomendado · solo ida</b>\n⭐ Barata · Madrid · 1.400 €/L · 2.0 km carretera\n2. Cercana &amp; Co · Madrid · 1.600 €/L · 0.0 km carretera\n\nDatos oficiales: 14/09/2026 08:00"
+  },
+  {
+    "kind": "liters",
+    "value": 1,
+    "mode": "round_trip",
+    "routes": {},
+    "best": "1",
+    "net": 0.0,
+    "message": "🚗 <b>Repostar · ida y vuelta</b>\n\n⭐ <b>Cercana &amp; Co</b> · 📍 Madrid\n⛽ Gasolina 95 · <b>1.600 €/L</b>\n📍 0.0 km en línea recta · <a href=\"https://www.google.com/maps/search/?api=1&query=40.000000,-3.000000\">Abrir en Maps</a>\n🛣 Ida/vuelta estimada: <b>0.0 km</b>\n💶 Repostaje: <b>1 L</b>\n⛽ Precio gasolinera recomendada: <b>1.600 €/L</b>\n🔥 Consumo usado: <b>6 L/100 km</b>\n🧭 Estimado desde la distancia en línea recta.\n\n⚠️ No veo una opción claramente mejor en el radio elegido.\n\n<b>Top recomendado · ida y vuelta</b>\n⭐ Cercana &amp; Co · Madrid · 1.600 €/L · 0.0 km estim.\n2. Barata · Madrid · 1.400 €/L · 2.8 km estim.\n\nDatos oficiales: 14/09/2026 08:00"
+  },
+  {
+    "kind": "liters",
+    "value": 1,
+    "mode": "round_trip",
+    "routes": {
+      "1": 0,
+      "2": 2
+    },
+    "best": "1",
+    "net": 0.0,
+    "message": "🚗 <b>Repostar · ida y vuelta</b>\n\n⭐ <b>Cercana &amp; Co</b> · 📍 Madrid\n⛽ Gasolina 95 · <b>1.600 €/L</b>\n📍 0.0 km en línea recta · <a href=\"https://www.google.com/maps/search/?api=1&query=40.000000,-3.000000\">Abrir en Maps</a>\n🛣 Ida/vuelta por carretera: <b>0.0 km</b>\n💶 Repostaje: <b>1 L</b>\n⛽ Precio gasolinera recomendada: <b>1.600 €/L</b>\n🔥 Consumo usado: <b>6 L/100 km</b>\n🧭 Calculado con ruta por carretera.\n\n⚠️ No veo una opción claramente mejor en el radio elegido.\n\n<b>Top recomendado · ida y vuelta</b>\n⭐ Cercana &amp; Co · Madrid · 1.600 €/L · 0.0 km carretera\n2. Barata · Madrid · 1.400 €/L · 4.0 km carretera\n\nDatos oficiales: 14/09/2026 08:00"
+  }
+]

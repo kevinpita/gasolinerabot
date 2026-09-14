@@ -5,13 +5,13 @@ This uses the same shared OpenBao and External Secrets Operator (ESO) setup as R
 Application resources:
 
 - KV v2 entry: `kv/apps/gasolinerabot`
-- Required entry key: `TELEGRAM_BOT_TOKEN`
+- Required entry keys: `TELEGRAM_BOT_TOKEN`, `POSTGRES_PASSWORD`, `POSTGRES_APP_PASSWORD`
 - Terraform policy: `gasolinerabot-read`
 - Kubernetes auth role and namespace: `gasolinerabot`
 - ESO ServiceAccount: `gasolinerabot:openbao-reader`
 - Kubernetes Secret: `gasolinerabot-secrets`
 
-Terraform manages only the policy and role. It does not manage or read the bot token. The Helm chart manages the ESO resources and TokenReview-only RBAC. The bot pod does not receive a Kubernetes API token.
+Terraform manages only the policy and role. It does not manage or read application credentials. The Helm chart manages the ESO resources and TokenReview-only RBAC. The bot pod does not receive a Kubernetes API token.
 
 ## Setup
 
@@ -43,24 +43,27 @@ rm "$state_dir/access.tfplan"
 
 Keep the state private and backed up. Use the same state path for later runs.
 
-## Store the Telegram token
+## Store application credentials
 
-Use the OpenBao UI, or run this in Bash. The prompt hides the token. The token does not enter shell history or command arguments. This command replaces the entry, which is intended to contain only the Telegram token.
+Use the OpenBao UI to add the Telegram token and two distinct, randomly generated database passwords. `POSTGRES_PASSWORD` is for the database administrator. `POSTGRES_APP_PASSWORD` is for the bot's non-superuser role.
+
+For the **first setup only**, this Bash command prompts for the Telegram token and generates both database passwords. It streams the JSON directly to OpenBao. Do not use it to rotate an initialized database, because it replaces the entry and PostgreSQL keeps its existing role passwords.
 
 ```bash
-IFS= read -r -s -p 'Telegram bot token: ' bot_token
-printf '\n'
-printf '%s' "$bot_token" | bao kv put -mount=kv apps/gasolinerabot TELEGRAM_BOT_TOKEN=-
-unset bot_token
+set -o pipefail
+python3 -c 'import getpass,json,secrets; print(json.dumps({"TELEGRAM_BOT_TOKEN":getpass.getpass("Telegram bot token: "),"POSTGRES_PASSWORD":secrets.token_urlsafe(32),"POSTGRES_APP_PASSWORD":secrets.token_urlsafe(32)}))' |
+  bao kv put -mount=kv apps/gasolinerabot -
 ```
 
-Do not put the token in Git, Terraform variables, or GitHub Actions secrets.
+Do not put credentials in Git, Terraform variables, or GitHub Actions secrets. The bot receives only its token and application password. The PostgreSQL pod receives the two database passwords.
+
+If you disable the bundled database and use an external database instead, add `DATABASE_URL` for the bot. See [database operations](../../docs/database.md) for backup and password rotation.
 
 ## Sync
 
 Set `openbao.enabled: true` in the chart values. Argo CD must use namespace `gasolinerabot`, with `CreateNamespace=true`, and allow the chart's ClusterRole and ClusterRoleBinding. Keep one chart installation in this namespace. Check existing resource ownership before the first sync.
 
-The default `deployment.enabled: false` lets you prepare the secret before the code is ready. After sync, check without printing secret data:
+The default `deployment.enabled: false` lets you prepare the secret, database, and preferences import before starting the bot. After sync, check without printing secret data:
 
 ```bash
 kubectl -n gasolinerabot wait secretstore/openbao --for=condition=Ready --timeout=120s

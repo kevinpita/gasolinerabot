@@ -15,8 +15,14 @@ grep -q 'name: TELEGRAM_BOT_TOKEN' "$tmp/deployment.yaml"
 grep -q 'type: Recreate' "$tmp/deployment.yaml"
 helm template gasolinerabot infra/chart --namespace gasolinerabot \
   --set deployment.enabled=true --set openbao.enabled=true \
+  --set postgresql.enabled=true \
   --set health.enabled=true --set image.digest=sha256:test > "$tmp/full.yaml"
 grep -q 'key: apps/gasolinerabot' "$tmp/full.yaml"
+grep -q 'kind: StatefulSet' "$tmp/full.yaml"
+grep -q 'kind: NetworkPolicy' "$tmp/full.yaml"
+grep -q 'key: POSTGRES_APP_PASSWORD' "$tmp/full.yaml"
+grep -q 'whenDeleted: Retain' "$tmp/full.yaml"
+grep -q 'NOSUPERUSER NOCREATEDB NOCREATEROLE' "$tmp/full.yaml"
 grep -q '/readyz' "$tmp/full.yaml"
 grep -q 'ghcr.io/kevinpita/gasolinerabot@sha256:test' "$tmp/full.yaml"
 if helm template gasolinerabot infra/chart --namespace wrong \

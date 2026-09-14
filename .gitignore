@@ -4,6 +4,11 @@
 !.env.example
 *.pem
 *.key
+*.zip
+*.sqlite*
+*.db
+*preferences*.json
+/backups/
 
 # Terraform state and credentials
 **/.terraform/*

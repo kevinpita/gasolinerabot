@@ -1,37 +1,75 @@
 # gasolinerabot
 
-Deployment scaffold for a Telegram bot. Application code will be added later.
+A small Go Telegram bot for fuel prices in Spain. Rebuilt from the original Python bot, with the same Spanish commands, buttons, and guided flows. PostgreSQL replaces SQLite.
 
-Uses the same deployment pattern as [reelrelay](https://github.com/kevinpita/reelrelay):
+## User features
+
+- `/start`, `/ajustes`: save a base location, fuels, and search radius, with a map preview.
+- `/precios`, `/precio`: rank nearby stations by price, then distance. `/top 1` through `/top 15` control the result count.
+- Send a location, or use `/cerca`, for a temporary search. It does not change the saved location.
+- `/repostar [destination]`, `/ahorro`: compare fuel price and travel cost, with both one-way and return-trip results. Remembers the last amount and vehicle consumption.
+- `/alertas`, `/alertas_periodo`, `/avisos_on`, `/avisos_off`: daily or weekly reports in `Europe/Madrid`.
+- `/tendencia`: seven-day price trends. History starts fresh and needs at least two days of data.
+- `/cancelar`: cancel a guided flow.
+- Main buttons: **⛽ Precios**, **🚗 Repostar**, **⏰ Alertas**, **⚙️ Ajustes**.
+- Price results include numbered map images, trend buttons, and Google Maps links.
+
+Fuels: Gasolina 95, Gasolina 98, Diésel / Gasóleo A, Diésel premium, GLP.
+
+## Small design
+
+One Go process handles Telegram long polling, a 30-minute MITECO price cache, image rendering, and a one-minute alert scheduler. PostgreSQL stores preferences and daily station prices. No Python runtime, ORM, Redis, PostGIS, public webhook, or separate worker is needed.
 
 ```text
-GitHub Actions -> GHCR image -> image reference in Git -> Argo CD -> Kubernetes
-OpenBao -> External Secrets Operator -> Kubernetes Secret -> TELEGRAM_BOT_TOKEN
+Telegram -> Go bot -> MITECO / OSRM / Nominatim / OSM tiles
+               |
+               -> PostgreSQL: preferences and price history
+
+GitHub Actions -> GHCR -> image reference in Git -> Argo CD -> Kubernetes
+OpenBao -> External Secrets Operator -> Kubernetes Secret -> bot and database
 ```
 
-## Prepared
+The nearest station is the savings baseline. Candidate travel cost is subtracted from savings relative to that baseline, as in the original bot. Destination filtering is approximate direction filtering, not a measured route detour. OSRM supplies road distances when available. Otherwise, the estimate is straight-line distance multiplied by 1.25. Public upstream services can fail or limit requests.
 
-- Helm chart at `infra/chart`, for namespace `gasolinerabot`.
-- One replica with `Recreate`, suitable for Telegram long polling.
-- Linux amd64, UID/GID 10001, read-only root filesystem, writable `/tmp`.
-- Separate OpenBao read policy and auth role at `infra/openbao`.
-- Secret `gasolinerabot-secrets`, with key `TELEGRAM_BOT_TOKEN`.
-- GHCR target `ghcr.io/kevinpita/gasolinerabot`, with eight-character commit tags.
-- CI checks for Helm rendering and Terraform validation.
+Maps use OSM tiles with attribution and an in-memory cache. A labelled schematic is used if tiles fail. Images are generated in memory and are not retained on disk. Price history is written once per feed refresh, not for each chat query. It retains approximately 30 days.
 
-No application, Dockerfile, bot token, or working image is included. Deployment and OpenBao sync are disabled by default. Image builds are disabled until the GitHub repository variable `BUILD_IMAGE` is `true`. No live infrastructure is changed by CI.
+## Development
 
-## Add the code
+Use Go 1.26.7 or later, a C compiler for race tests, PostgreSQL 18, Python 3 for the one-time exporter tests, and Just. Helm and Terraform are needed for infrastructure checks.
 
-1. Add the existing bot code and its dependencies. Read `TELEGRAM_BOT_TOKEN` from the environment. Confirm that it uses long polling before keeping the one-replica deployment model.
-2. Add a Dockerfile and a restrictive `.dockerignore` for the actual runtime. Support Linux amd64, UID/GID 10001, a read-only root filesystem, writable `/tmp`, and SIGTERM shutdown. Add explicit storage if the bot needs persistent data.
-3. Add app tests to CI and make the image job depend on them. Add `scripts/smoke-image.sh`, which receives the built image name and must test it without live credentials. The image job requires this script before publication.
-4. If the app serves `/healthz` and `/readyz` on port 8080, set `health.enabled: true`. Otherwise adapt the probes before production use.
-5. Enable image builds with `gh variable set BUILD_IMAGE --body true`. Main-branch pushes and `v*.*.*` tags publish images. Pull requests build and test but do not publish. CI uses `GITHUB_TOKEN`, not the Telegram token.
+```bash
+cp .env.example .env
+chmod 600 .env
+# Set the token and local database URLs in .env.
+just run
+just build
+just check-db
+```
 
-## Add to your deployment
+Just loads `.env`. The executable reads process environment variables only. Without Just, export them before running `go run ./cmd/gasolinerabot`.
 
-Configure your Argo CD Application with:
+**`TEST_DATABASE_URL` must name a disposable database. Tests truncate its preference and price-history tables.** Without it, Go database tests are skipped. CI always provides a separate PostgreSQL test service. No tests need real Telegram credentials or external map/price APIs.
+
+Database migrations run transactionally at startup, under an advisory lock. The same migrations run before a preferences import. The runtime DB user owns only this application's database and is not a PostgreSQL superuser.
+
+Configuration:
+
+| Variable | Purpose |
+| --- | --- |
+| `TELEGRAM_BOT_TOKEN` | Required for the bot, not for import |
+| `DATABASE_URL` | PostgreSQL connection URI for local or external databases |
+| `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`, `PGPASSWORD`, `PGSSLMODE` | Standard PostgreSQL variables, used by the chart instead of a URI |
+| `HEALTH_ADDR` | Health listener, default `:8080` |
+
+`--version` prints the build version without needing credentials. `/healthz` checks the process. `/readyz` checks startup state and the database. Readiness does not test current upstream availability.
+
+## Deployment
+
+The chart is at `infra/chart`. It prepares one bot Deployment and an optional small PostgreSQL 18 StatefulSet in the same namespace. PostgreSQL has a **2 GiB retained PVC**, 128 MiB memory request, and 256 MiB limit. Set `postgresql.storageClass` if the cluster has no default. This is a single database instance, not a high-availability setup.
+
+Both `deployment.enabled` and `postgresql.enabled` remain **false** until you configure secrets and storage. No live deployment was changed during the rebuild.
+
+Add this source and destination to your existing Argo CD Application:
 
 ```yaml
 source:
@@ -46,23 +84,36 @@ syncPolicy:
     - CreateNamespace=true
 ```
 
-This is an Application spec fragment, not a complete manifest. Add it through your existing deployment repo. Do not manage the same installation with both Helm and Argo CD.
+This is a spec fragment, not a full Application. Follow [OpenBao setup](infra/openbao/README.md), then:
 
-Follow [OpenBao setup](infra/openbao/README.md) to provision the separate role and store the token at `kv/apps/gasolinerabot`. Without ESO, provide the same Kubernetes Secret through your existing secret-management process.
+1. Set `openbao.enabled: true` and the correct Kubernetes audience. Provision the application policy and role.
+2. Store the Telegram and database credentials in `kv/apps/gasolinerabot`.
+3. Enable `postgresql.enabled` and sync. Wait for PostgreSQL initialization.
+4. Import the old preferences, if wanted, using [the private import procedure](docs/import.md).
+5. Set `image.tag` to a published eight-character commit SHA, or set `image.digest`. Enable `deployment.enabled` and sync.
+6. Stop the old Python bot before starting the Go bot with the same Telegram token.
 
-After an image is published, set `image.tag` or `image.digest` in `infra/chart/values.yaml`. A digest takes priority. Set `deployment.enabled: true` only when the image and secret are ready. For private GHCR images, supply `imagePullSecrets`, or make the package public. Repository visibility does not set package visibility.
+The bot runs as UID/GID 10001 with a read-only root filesystem. PostgreSQL runs as UID/GID 999 with persistent data and writable temporary mounts. The chart uses a namespace-only database Service and a NetworkPolicy that permits bot pods only. Your CNI must enforce NetworkPolicy. Internal database traffic does not use TLS. Use an external TLS-enabled database if this does not match your cluster's security requirements.
 
-Registry publication alone does not deploy a new version. Commit the new image reference and sync Argo CD. No automatic image updater is configured.
+CI checks Go formatting, tests, vulnerabilities, Helm rendering, and Terraform. It builds and smoke-tests a Linux amd64 image, then publishes `ghcr.io/kevinpita/gasolinerabot:<8-character-commit>` on `main` and version tags. Pull requests do not publish. No token or cluster credentials belong in CI.
 
-## Local checks
+An image push alone does not deploy it. Commit the new image reference and sync Argo CD. For private images, configure `imagePullSecrets` or make the GHCR package public.
 
-Requires Helm, Terraform, and Bash:
+## Database operations
 
-```bash
-bash scripts/check-infra.sh
-terraform -chdir=infra/openbao fmt -check
-terraform -chdir=infra/openbao init -backend=false -lockfile=readonly
-terraform -chdir=infra/openbao validate
-```
+- Back up the database before rollout and on a regular schedule. A retained PVC is **not a backup**.
+- Store backups outside the cluster and test restoration. Backup automation is not included.
+- See [database operations](docs/database.md) for backup, restore, and password rotation.
+- Monitor PVC usage. Increase the claim size through your storage provider's supported procedure.
+- PostgreSQL initialization scripts run only on an empty data directory. Editing a Secret does not rotate an existing database role password.
+- Do not change the PostgreSQL major version in place. Use a planned dump/restore or upgrade procedure.
 
-Keep credentials in OpenBao or private local `.env` files, never in Git.
+## Intentional limits and fixes
+
+The rewrite preserves the main user experience, not every old bug or message boundary. Spanish labels remain, but validation rejects negative values and unsupported minute-level schedules. Settings changes preserve paused alerts and existing schedules. Maps cap markers at eight, as before.
+
+Conversations are held in memory for 30 minutes. A restart ends an unfinished conversation. Preferences persist. Requests are processed one at a time, which keeps this small bot simple but can delay other requests while routes or maps load.
+
+Alerts retry during their scheduled hour, including after a restart. They do not catch up after that hour. A crash after Telegram accepts a message but before the database records it can cause a duplicate. Multi-message reports can be partially delivered. This is not an exactly-once delivery system.
+
+Chat IDs and saved locations are private data. The ZIP, SQLite database, token, and exported preferences must never be committed. The import tool copies preferences only. It does not import price history or map images.
