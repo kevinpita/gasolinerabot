@@ -19,6 +19,7 @@ import (
 )
 
 var version = "dev"
+var buildTime = ""
 
 func main() {
 	if e := run(); e != nil {
@@ -27,6 +28,7 @@ func main() {
 	}
 }
 func run() error {
+	startedAt := time.Now()
 	show := flag.Bool("version", false, "Print version")
 	importPrefs := flag.Bool("import-preferences", false, "Import private JSON preferences from stdin, then exit")
 	flag.Parse()
@@ -71,7 +73,7 @@ func run() error {
 	if e != nil {
 		return errors.New("Telegram authentication failed")
 	}
-	app := &bot.App{Store: store, Telegram: telegram, Prices: &bot.PriceSource{HTTP: bot.NewPriceHTTPClient(), Store: store}, Routing: &bot.Routing{HTTP: shortClient}, Maps: &bot.Maps{HTTP: shortClient}, Log: slog.Default()}
+	app := &bot.App{Store: store, Telegram: telegram, Prices: &bot.PriceSource{HTTP: bot.NewPriceHTTPClient(), Store: store}, Routing: &bot.Routing{HTTP: shortClient}, Maps: &bot.Maps{HTTP: shortClient}, Log: slog.Default(), Version: version, BuildTime: buildTime, StartedAt: startedAt}
 	addr := os.Getenv("HEALTH_ADDR")
 	if addr == "" {
 		addr = ":8080"

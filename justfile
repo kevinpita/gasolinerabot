@@ -4,10 +4,10 @@ _default:
     @just --list
 
 run:
-    go run ./cmd/gasolinerabot
+    go run -ldflags="-X main.version=$(git rev-parse HEAD) -X main.buildTime=$(date -u +%Y-%m-%dT%H:%M:%SZ)" ./cmd/gasolinerabot
 
 build:
-    CGO_ENABLED=0 go build -trimpath -o bin/gasolinerabot ./cmd/gasolinerabot
+    CGO_ENABLED=0 go build -trimpath -ldflags="-X main.version=$(git rev-parse HEAD) -X main.buildTime=$(date -u +%Y-%m-%dT%H:%M:%SZ)" -o bin/gasolinerabot ./cmd/gasolinerabot
 
 fmt:
     gofmt -w cmd internal

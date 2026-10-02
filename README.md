@@ -11,6 +11,7 @@ A small Go Telegram bot for fuel prices in Spain. Rebuilt from the original Pyth
 - `/alertas`, `/alertas_periodo`, `/avisos_on`, `/avisos_off`: daily or weekly reports in `Europe/Madrid`.
 - `/tendencia`: seven-day price trends. History starts fresh and needs at least two days of data.
 - `/cancelar`: cancel a guided flow.
+- `/version`: show the commit hash, build time in UTC, process start time, and uptime. Uptime resets on restart.
 - Main buttons: **⛽ Precios**, **🚗 Repostar**, **⏰ Alertas**, **⚙️ Ajustes**.
 - Price results include numbered map images, trend buttons, and Google Maps links.
 
@@ -48,7 +49,7 @@ just build
 just check-db
 ```
 
-Just loads `.env`. The executable reads process environment variables only. Without Just, export them before running `go run ./cmd/gasolinerabot`.
+Just loads `.env`. `just run` and `just build` embed the current commit hash and build time. CI images include these values too. Plain `go run` or `go build` uses `dev` and an unknown build time. The executable reads process environment variables only. Without Just, export them before running `go run ./cmd/gasolinerabot`.
 
 **`TEST_DATABASE_URL` must name a disposable database. Tests truncate its preference and price-history tables.** Without it, Go database tests are skipped. CI always provides a separate PostgreSQL test service. No tests need real Telegram credentials or external map/price APIs.
 

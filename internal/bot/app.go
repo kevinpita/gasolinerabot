@@ -21,13 +21,16 @@ type Session struct {
 }
 type sessionKey struct{ Chat, User int64 }
 type App struct {
-	Store    *Store
-	Telegram *Telegram
-	Prices   *PriceSource
-	Routing  *Routing
-	Maps     *Maps
-	Log      *slog.Logger
-	sessions map[sessionKey]*Session
+	Store     *Store
+	Telegram  *Telegram
+	Prices    *PriceSource
+	Routing   *Routing
+	Maps      *Maps
+	Log       *slog.Logger
+	Version   string
+	BuildTime string
+	StartedAt time.Time
+	sessions  map[sessionKey]*Session
 }
 
 func safeError(err error) string {
@@ -108,6 +111,11 @@ func (a *App) Handle(ctx context.Context, u Update) error {
 		user = m.From.ID
 	}
 	id := m.Chat.ID
+	text := strings.TrimSpace(m.Text)
+	cmd, args := command(text)
+	if u.Callback == nil && cmd == "/version" {
+		return a.Telegram.Send(ctx, id, a.versionMessage(time.Now()), nil)
+	}
 	key := sessionKey{id, user}
 	if a.sessions == nil {
 		a.sessions = map[sessionKey]*Session{}
@@ -122,8 +130,6 @@ func (a *App) Handle(ctx context.Context, u Update) error {
 		return e
 	}
 	send := func(t string, k *Markup) error { return a.Telegram.Send(ctx, id, t, k) }
-	text := strings.TrimSpace(m.Text)
-	cmd, args := command(text)
 	switch text {
 	case "⛽ Precios":
 		cmd = "/precios"
