@@ -38,7 +38,7 @@ Maps use OSM tiles with attribution and an in-memory cache. A labelled schematic
 
 ## Development
 
-Use Go 1.26.7 or later, a C compiler for race tests, PostgreSQL 18, Python 3 for the one-time exporter tests, and Just. Helm and Terraform are needed for infrastructure checks.
+Use Go 1.27.4 or later, a C compiler for race tests, PostgreSQL 18, Python 3 for the one-time exporter tests, and Just. Helm and Terraform are needed for infrastructure checks.
 
 ```bash
 cp .env.example .env
