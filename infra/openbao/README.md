@@ -16,7 +16,7 @@ Terraform manages only the policy and role. It does not manage or read applicati
 ## Setup
 
 1. Confirm the shared `kubernetes/` auth mount uses the login JWT for TokenReview. ESO must be allowed to request tokens for `openbao-reader`.
-2. Set `openbao.audience` in `infra/chart/values.yaml` to an audience accepted by your Kubernetes API. Terraform reads this file too. Do not override the audience only in Argo CD.
+2. Set `openbao.audience` in `infra/chart/values.yaml` to an audience accepted by your Kubernetes API. Terraform reads this file too. Do not override the audience only in the Flux `HelmRelease`.
 3. Use your existing administrator account to log in. Run from the repository root:
 
 ```bash
@@ -59,11 +59,11 @@ Do not put credentials in Git, Terraform variables, or GitHub Actions secrets. T
 
 If you disable the bundled database and use an external database instead, add `DATABASE_URL` for the bot. See [database operations](../../docs/database.md) for backup and password rotation.
 
-## Sync
+## Deploy
 
-Set `openbao.enabled: true` in the chart values. Argo CD must use namespace `gasolinerabot`, with `CreateNamespace=true`, and allow the chart's ClusterRole and ClusterRoleBinding. Keep one chart installation in this namespace. Check existing resource ownership before the first sync.
+The `HelmRelease` in the `flux-config` repository installs the chart in namespace `gasolinerabot` and sets `openbao.enabled: true`. Flux must be allowed to manage the chart's ClusterRole and ClusterRoleBinding. Keep one chart installation in this namespace. Check existing resource ownership before the first installation.
 
-The default `deployment.enabled: false` lets you prepare the secret, database, and preferences import before starting the bot. After sync, check without printing secret data:
+The default `deployment.enabled: false` lets you prepare the secret, database, and preferences import before starting the bot. After Flux installs the release, check without printing secret data:
 
 ```bash
 kubectl -n gasolinerabot wait secretstore/openbao --for=condition=Ready --timeout=120s

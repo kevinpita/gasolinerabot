@@ -26,7 +26,7 @@ Telegram -> Go bot -> MITECO / OSRM / Nominatim / OSM tiles
                |
                -> PostgreSQL: preferences and price history
 
-GitHub Actions -> GHCR -> image reference in Git -> Argo CD -> Kubernetes
+GitHub Actions -> GHCR image and chart -> Flux -> Kubernetes
 OpenBao -> External Secrets Operator -> Kubernetes Secret -> bot and database
 ```
 
@@ -70,37 +70,24 @@ Configuration:
 
 The chart is at `infra/chart`. It prepares one bot Deployment and an optional small PostgreSQL 18 StatefulSet in the same namespace. PostgreSQL has a **2 GiB retained PVC**, 128 MiB memory request, and 256 MiB limit. Set `postgresql.storageClass` if the cluster has no default. This is a single database instance, not a high-availability setup.
 
-Both `deployment.enabled` and `postgresql.enabled` remain **false** until you configure secrets and storage. No live deployment was changed during the rebuild.
+Both `deployment.enabled` and `postgresql.enabled` are **false** in the chart. The `HelmRelease` in the `flux-config` repository enables them for namespace `gasolinerabot` and installs the highest published chart version.
 
-Add this source and destination to your existing Argo CD Application:
-
-```yaml
-source:
-  repoURL: https://github.com/kevinpita/gasolinerabot.git
-  targetRevision: main
-  path: infra/chart
-destination:
-  server: https://kubernetes.default.svc
-  namespace: gasolinerabot
-syncPolicy:
-  syncOptions:
-    - CreateNamespace=true
-```
-
-This is a spec fragment, not a full Application. Follow [OpenBao setup](infra/openbao/README.md), then:
+For a new installation, follow [OpenBao setup](infra/openbao/README.md), then:
 
 1. Set `openbao.enabled: true` and the correct Kubernetes audience. Provision the application policy and role.
 2. Store the Telegram and database credentials in `kv/apps/gasolinerabot`.
-3. Enable `postgresql.enabled` and sync. Wait for PostgreSQL initialization.
+3. Enable `postgresql.enabled` and let Flux apply it. Wait for PostgreSQL initialization.
 4. Import the old preferences, if wanted, using [the private import procedure](docs/import.md).
-5. Set `image.tag` to a published eight-character commit SHA, or set `image.digest`. Enable `deployment.enabled` and sync.
+5. Enable `deployment.enabled`. With an empty `image.tag`, the chart deploys the image that has the chart's own version.
 6. Stop the old Python bot before starting the Go bot with the same Telegram token.
 
 The bot runs as UID/GID 10001 with a read-only root filesystem. PostgreSQL runs as UID/GID 999 with persistent data and writable temporary mounts. The chart uses a namespace-only database Service and a NetworkPolicy that permits bot pods only. Your CNI must enforce NetworkPolicy. Internal database traffic does not use TLS. Use an external TLS-enabled database if this does not match your cluster's security requirements.
 
-CI checks Go formatting, tests, vulnerabilities, Helm rendering, and Terraform. It builds and smoke-tests a Linux amd64 image, then publishes `ghcr.io/kevinpita/gasolinerabot:<8-character-commit>` on `main` and version tags. Pull requests do not publish. No token or cluster credentials belong in CI.
+CI checks Go formatting, tests, vulnerabilities, Helm rendering, and Terraform. It builds and smoke-tests a Linux amd64 image. On `main` it then publishes the image and the Helm chart with the same version, as `ghcr.io/kevinpita/gasolinerabot:<version>` and `ghcr.io/kevinpita/charts/gasolinerabot:<version>`. Pull requests do not publish. No token or cluster credentials belong in CI.
 
-An image push alone does not deploy it. Commit the new image reference and sync Argo CD. For private images, configure `imagePullSecrets` or make the GHCR package public.
+CI selects the version. `version` in `infra/chart/Chart.yaml` is the minimum. While a `v<version>` Git tag exists for it, CI uses the highest tag plus one patch: `0.1.0`, then `0.1.1`, then `0.1.2`. To start a new minor or major version, change `version` in `Chart.yaml`. CI records each version as a Git tag before it publishes. A run that fails after that step leaves a tag without an image, and the next run takes the next version.
+
+Every successful push to `main` deploys, because Flux follows the highest chart version. To roll back, pin an earlier chart version in `flux-config`. For private images, configure `imagePullSecrets` or make the GHCR package public.
 
 ## Database operations
 
